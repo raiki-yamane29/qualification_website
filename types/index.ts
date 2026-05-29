@@ -17,7 +17,7 @@ export type Material = {
 export type StudyLog = {
   id: string
   qualification_id: string | null
-  minutes: number
+  hours: number
   comment: string | null
   status: string
   bg_job: string | null

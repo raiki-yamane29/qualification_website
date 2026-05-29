@@ -112,7 +112,7 @@ export function StudyLogForm() {
 
     const { error: insertError } = await supabase.from('study_logs').insert({
       qualification_id: qualificationId,
-      minutes: Math.round(hours * 60),
+      hours: hours,
       comment: comment.trim() || null,
       status: '合格した',
       bg_job: bgJob || null,

@@ -13,9 +13,8 @@ function relativeTime(dateStr: string): string {
   return `${days}日前`
 }
 
-function formatHours(minutes: number): string {
-  const h = minutes / 60
-  return h % 1 === 0 ? `${h}時間` : `${h.toFixed(1)}時間`
+function formatHours(hours: number): string {
+  return hours % 1 === 0 ? `${hours}時間` : `${hours.toFixed(1)}時間`
 }
 
 function BackgroundTags({ log }: { log: StudyLog }) {
@@ -51,7 +50,7 @@ export function CommentTimeline({ logs }: Props) {
         <li key={log.id} className="p-3 rounded-lg border bg-card space-y-1.5">
           <div className="flex items-center justify-between gap-2">
             <span className="text-xs font-medium text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">
-              {formatHours(log.minutes)}で合格
+              {formatHours(log.hours)}で合格
             </span>
             <span className="text-xs text-muted-foreground">{relativeTime(log.created_at)}</span>
           </div>

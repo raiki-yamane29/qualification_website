@@ -8,18 +8,17 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  ReferenceLine,
 } from 'recharts'
 import { StudyLog } from '@/types'
 
 type Props = { logs: StudyLog[] }
 
 const BUCKETS = [
-  { label: '〜10h', max: 600 },
-  { label: '10〜30h', max: 1800 },
-  { label: '30〜50h', max: 3000 },
-  { label: '50〜100h', max: 6000 },
-  { label: '100〜200h', max: 12000 },
+  { label: '〜10h', max: 10 },
+  { label: '10〜30h', max: 30 },
+  { label: '30〜50h', max: 50 },
+  { label: '50〜100h', max: 100 },
+  { label: '100〜200h', max: 200 },
   { label: '200h〜', max: Infinity },
 ]
 
@@ -34,12 +33,11 @@ export function StudyTimeBarChart({ logs }: Props) {
     const prev = i === 0 ? 0 : BUCKETS[i - 1].max
     return {
       label: b.label,
-      count: passedLogs.filter((l) => l.minutes > prev && l.minutes <= b.max).length,
+      count: passedLogs.filter((l) => Number(l.hours) > prev && Number(l.hours) <= b.max).length,
     }
   })
 
-  const avgMinutes = Math.round(passedLogs.reduce((s, l) => s + l.minutes, 0) / passedLogs.length)
-  const avgHours = (avgMinutes / 60).toFixed(1)
+  const avgHours = (passedLogs.reduce((s, l) => s + Number(l.hours), 0) / passedLogs.length).toFixed(1)
 
   return (
     <div className="space-y-2">

@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 type Log = {
   id: string
   qualification_name: string | null
-  minutes: number
+  hours: number
   comment: string | null
   created_at: string
 }
@@ -20,9 +20,8 @@ type Qualification = {
 
 type Props = { logs: Log[]; qualifications: Qualification[] }
 
-function formatHours(minutes: number): string {
-  const h = minutes / 60
-  return h % 1 === 0 ? `${h}時間` : `${h.toFixed(1)}時間`
+function formatHours(hours: number): string {
+  return hours % 1 === 0 ? `${hours}時間` : `${hours.toFixed(1)}時間`
 }
 
 function formatDate(dateStr: string): string {
@@ -152,7 +151,7 @@ export function AdminDashboard({ logs, qualifications }: Props) {
                       {formatDate(log.created_at)}
                     </td>
                     <td className="px-4 py-2">{log.qualification_name ?? '—'}</td>
-                    <td className="px-4 py-2 whitespace-nowrap">{formatHours(log.minutes)}</td>
+                    <td className="px-4 py-2 whitespace-nowrap">{formatHours(log.hours)}</td>
                     <td className="px-4 py-2 max-w-xs truncate text-muted-foreground">
                       {log.comment ?? '—'}
                     </td>

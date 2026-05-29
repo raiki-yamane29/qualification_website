@@ -14,24 +14,24 @@ type QualificationStats = Qualification & {
 
 type Props = {
   qualifications: Qualification[]
-  logs: Pick<StudyLog, 'qualification_id' | 'minutes' | 'status'>[]
+  logs: Pick<StudyLog, 'qualification_id' | 'hours' | 'status'>[]
 }
 
 function buildStats(qualifications: Qualification[], logs: Props['logs']): QualificationStats[] {
-  const map: Record<string, { total: number; minutes: number }> = {}
+  const map: Record<string, { total: number; hours: number }> = {}
   for (const log of logs) {
     if (!log.qualification_id) continue
-    if (!map[log.qualification_id]) map[log.qualification_id] = { total: 0, minutes: 0 }
+    if (!map[log.qualification_id]) map[log.qualification_id] = { total: 0, hours: 0 }
     map[log.qualification_id].total++
-    map[log.qualification_id].minutes += log.minutes
+    map[log.qualification_id].hours += Number(log.hours)
   }
   return qualifications
     .map((q) => {
-      const s = map[q.id] ?? { total: 0, minutes: 0 }
+      const s = map[q.id] ?? { total: 0, hours: 0 }
       return {
         ...q,
         count: s.total,
-        avgHours: s.total > 0 ? Math.round(s.minutes / s.total / 60) : 0,
+        avgHours: s.total > 0 ? Math.round(s.hours / s.total) : 0,
       }
     })
     .sort((a, b) => b.count - a.count)

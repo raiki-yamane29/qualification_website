@@ -9,14 +9,14 @@ export default async function StatsPage() {
     supabase.from('qualifications').select('*').order('category'),
     supabase
       .from('study_logs')
-      .select('qualification_id, minutes, status'),
+      .select('qualification_id, hours, status'),
   ])
 
   const qualifications = (qualificationsRaw ?? []) as Qualification[]
-  const logs = (logsRaw ?? []) as Pick<StudyLog, 'qualification_id' | 'minutes' | 'status'>[]
+  const logs = (logsRaw ?? []) as Pick<StudyLog, 'qualification_id' | 'hours' | 'status'>[]
 
   const totalLogs = logs.length
-  const totalHours = Math.floor(logs.reduce((s, l) => s + l.minutes, 0) / 60)
+  const totalHours = Math.floor(logs.reduce((s, l) => s + Number(l.hours), 0))
 
   return (
     <main className="min-h-screen py-10 px-4">

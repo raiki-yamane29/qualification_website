@@ -16,7 +16,7 @@ export default async function AdminPage() {
   const [{ data: logsData }, { data: qualsData }] = await Promise.all([
     supabaseAdmin
       .from('study_logs')
-      .select('id, minutes, comment, created_at, qualifications(name)')
+      .select('id, hours, comment, created_at, qualifications(name)')
       .order('created_at', { ascending: false }),
     supabaseAdmin
       .from('qualifications')
@@ -27,7 +27,7 @@ export default async function AdminPage() {
   const logs = (logsData ?? []).map((row: any) => ({
     id: row.id,
     qualification_name: row.qualifications?.name ?? null,
-    minutes: row.minutes,
+    hours: Number(row.hours),
     comment: row.comment,
     created_at: row.created_at,
   }))
