@@ -1,3 +1,4 @@
+import { Suspense } from 'react'
 import { StudyLogForm } from '@/components/StudyLogForm'
 
 export default function HomePage() {
@@ -10,7 +11,9 @@ export default function HomePage() {
             今日の学習を10秒で記録しよう
           </p>
         </div>
-        <StudyLogForm />
+        <Suspense>
+          <StudyLogForm />
+        </Suspense>
       </div>
     </main>
   )

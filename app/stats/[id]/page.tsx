@@ -120,7 +120,7 @@ export default async function QualificationStatsPage({ params, searchParams }: P
 
         {/* 投稿ボタン */}
         <div className="text-center pb-4">
-          <Link href="/">
+          <Link href={`/?qualification_id=${id}`}>
             <Button>自分の学習記録を投稿する</Button>
           </Link>
         </div>

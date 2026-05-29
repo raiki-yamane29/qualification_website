@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { Qualification } from '@/types'
 import { Button } from '@/components/ui/button'
@@ -52,6 +52,8 @@ function ChipGroup({
 
 export function StudyLogForm() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const preselectedId = searchParams.get('qualification_id') ?? ''
   const [qualifications, setQualifications] = useState<Qualification[]>([])
   const [selectedCategory, setSelectedCategory] = useState<string>('')
   const [qualificationId, setQualificationId] = useState<string>('')
@@ -79,10 +81,17 @@ export function StudyLogForm() {
         if (data) {
           const list = data as Qualification[]
           setQualifications(list)
-          setSelectedCategory(list[0]?.category ?? '')
+          const preselected = preselectedId ? list.find((q) => q.id === preselectedId) : null
+          if (preselected) {
+            setSelectedCategory(preselected.category)
+            setQualificationId(preselected.id)
+            setQualificationName(preselected.name)
+          } else {
+            setSelectedCategory(list[0]?.category ?? '')
+          }
         }
       })
-  }, [])
+  }, [preselectedId])
 
   const categories = Array.from(new Set(qualifications.map((q) => q.category)))
   const filteredQualifications = qualifications.filter((q) => q.category === selectedCategory)
