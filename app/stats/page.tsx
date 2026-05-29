@@ -16,7 +16,6 @@ export default async function StatsPage() {
   const logs = (logsRaw ?? []) as Pick<StudyLog, 'qualification_id' | 'hours' | 'status'>[]
 
   const totalLogs = logs.length
-  const totalHours = Math.floor(logs.reduce((s, l) => s + Number(l.hours), 0))
 
   return (
     <main className="min-h-screen py-10 px-4">
@@ -24,7 +23,7 @@ export default async function StatsPage() {
         <div className="text-center space-y-1">
           <h1 className="text-2xl font-bold">資格別 学習統計</h1>
           <p className="text-muted-foreground text-sm">
-            {totalLogs} 件の学習記録 · 合計 {totalHours} 時間
+            {totalLogs} 件の合格記録
           </p>
         </div>
 
