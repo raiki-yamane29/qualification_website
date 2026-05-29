@@ -3,28 +3,22 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
-import { Material } from '@/types'
+import { Qualification } from '@/types'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
 
-const QUICK_MINUTES = [30, 60, 90, 120, 150, 180]
+const SLIDER_MIN = 0
+const SLIDER_MAX = 500
 
 export function StudyLogForm() {
   const router = useRouter()
-  const [materials, setMaterials] = useState<Material[]>([])
-  const [materialId, setMaterialId] = useState<string>('')
-  const [minutes, setMinutes] = useState<number | ''>('')
-  const [status, setStatus] = useState<'勉強中' | '合格した'>('勉強中')
+  const [qualifications, setQualifications] = useState<Qualification[]>([])
+  const [selectedCategory, setSelectedCategory] = useState<string>('')
+  const [qualificationId, setQualificationId] = useState<string>('')
+  const [qualificationName, setQualificationName] = useState<string>('')
+  const [hours, setHours] = useState<number>(0)
   const [comment, setComment] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
@@ -37,30 +31,40 @@ export function StudyLogForm() {
 
   useEffect(() => {
     supabase
-      .from('materials')
+      .from('qualifications')
       .select('*')
-      .order('title')
+      .order('category')
       .then(({ data }) => {
-        if (data) setMaterials(data as Material[])
+        if (data) {
+          const list = data as Qualification[]
+          setQualifications(list)
+          setSelectedCategory(list[0]?.category ?? '')
+        }
       })
   }, [])
 
-  async function handleSubmit(e: React.FormEvent) {
+  const categories = Array.from(new Set(qualifications.map((q) => q.category)))
+  const filteredQualifications = qualifications.filter((q) => q.category === selectedCategory)
+
+  function selectQualification(q: Qualification) {
+    setQualificationId(q.id)
+    setQualificationName(q.name)
+  }
+
+  async function handleSubmit(e: React.SyntheticEvent) {
     e.preventDefault()
-    if (!materialId || !minutes) {
-      setError('教材と勉強時間を入力してください。')
+    if (!qualificationId) {
+      setError('資格を選択してください。')
       return
     }
     setSubmitting(true)
     setError('')
 
-    const selectedMaterial = materials.find((m) => m.id === materialId)
-
     const { error: insertError } = await supabase.from('study_logs').insert({
-      material_id: materialId,
-      minutes: Number(minutes),
+      qualification_id: qualificationId,
+      minutes: Math.round(hours * 60),
       comment: comment.trim() || null,
-      status,
+      status: '合格した',
     })
 
     if (insertError) {
@@ -70,89 +74,121 @@ export function StudyLogForm() {
     }
 
     localStorage.setItem('submitted', 'true')
-    localStorage.setItem('lastMaterialTitle', selectedMaterial?.title ?? '')
-    localStorage.setItem('lastMinutes', String(minutes))
+    localStorage.setItem('lastQualificationName', qualificationName)
+    localStorage.setItem('lastQualificationId', qualificationId)
+    localStorage.setItem('lastHours', String(hours))
     router.push('/complete')
   }
 
   return (
     <Card className="w-full max-w-lg mx-auto">
       <CardHeader>
-        <CardTitle className="text-xl">学習記録を投稿する</CardTitle>
+        <CardTitle className="text-xl">合格体験を投稿する</CardTitle>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* 教材選択 */}
-          <div className="space-y-2">
-            <Label htmlFor="material">教材</Label>
-            <Select value={materialId} onValueChange={(v) => setMaterialId(v ?? '')}>
-              <SelectTrigger id="material">
-                <SelectValue placeholder="教材を選択してください" />
-              </SelectTrigger>
-              <SelectContent>
-                {materials.map((m) => (
-                  <SelectItem key={m.id} value={m.id}>
-                    {m.title}
-                  </SelectItem>
+
+          {/* ── 資格選択 ── */}
+          <div className="space-y-3">
+            <Label className="text-base font-semibold">受験した資格</Label>
+
+            {/* カテゴリタグ（小さいチップ） */}
+            <div>
+              <p className="text-xs text-muted-foreground mb-1.5">カテゴリ</p>
+              <div className="flex flex-wrap gap-1.5">
+                {categories.map((cat) => (
+                  <button
+                    key={cat}
+                    type="button"
+                    onClick={() => {
+                      setSelectedCategory(cat)
+                      setQualificationId('')
+                      setQualificationName('')
+                    }}
+                    className={`text-xs px-2.5 py-1 rounded-full border transition-colors ${
+                      selectedCategory === cat
+                        ? 'bg-zinc-800 text-white border-zinc-800'
+                        : 'bg-muted text-muted-foreground border-transparent hover:border-zinc-300'
+                    }`}
+                  >
+                    {cat}
+                  </button>
                 ))}
-              </SelectContent>
-            </Select>
+              </div>
+            </div>
+
+            {/* 資格ボタン（大きめカード風） */}
+            {selectedCategory && (
+              <div>
+                <p className="text-xs text-muted-foreground mb-1.5">資格を選択</p>
+                <div className="grid grid-cols-1 gap-2">
+                  {filteredQualifications.map((q) => (
+                    <button
+                      key={q.id}
+                      type="button"
+                      onClick={() => selectQualification(q)}
+                      className={`w-full text-left px-4 py-2.5 rounded-lg border transition-colors text-sm ${
+                        qualificationId === q.id
+                          ? 'bg-primary/10 border-primary text-primary font-medium'
+                          : 'bg-background border-border hover:bg-muted'
+                      }`}
+                    >
+                      {q.name}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
-          {/* 勉強時間 */}
-          <div className="space-y-2">
-            <Label>勉強時間（分）</Label>
-            <div className="flex flex-wrap gap-2">
-              {QUICK_MINUTES.map((m) => (
-                <Button
-                  key={m}
-                  type="button"
-                  variant={minutes === m ? 'default' : 'outline'}
-                  size="sm"
-                  onClick={() => setMinutes(m)}
-                >
-                  {m}分
-                </Button>
-              ))}
+          {/* ── 勉強時間（スライダー） ── */}
+          <div className="space-y-3">
+            <Label className="text-base font-semibold">合計勉強時間</Label>
+            <div className="text-center">
+              <span className="text-4xl font-bold tabular-nums">{hours}</span>
+              <span className="text-lg text-muted-foreground ml-1">時間</span>
             </div>
             <input
-              type="number"
-              min={1}
-              max={1440}
-              placeholder="または直接入力（分）"
-              value={minutes}
-              onChange={(e) =>
-                setMinutes(e.target.value === '' ? '' : Number(e.target.value))
-              }
-              className="w-full border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+              type="range"
+              min={SLIDER_MIN}
+              max={SLIDER_MAX}
+              step={5}
+              value={hours}
+              onChange={(e) => setHours(Number(e.target.value))}
+              className="w-full accent-primary cursor-pointer"
             />
+            <div className="flex justify-between text-xs text-muted-foreground px-0.5">
+              <span>{SLIDER_MIN}時間</span>
+              <span>100時間</span>
+              <span>200時間</span>
+              <span>300時間</span>
+              <span>{SLIDER_MAX}時間</span>
+            </div>
+            {/* 直接入力 */}
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-muted-foreground shrink-0">直接入力:</span>
+              <input
+                type="number"
+                min={SLIDER_MIN}
+                max={9999}
+                step={5}
+                value={hours}
+                onChange={(e) => {
+                  const v = Number(e.target.value)
+                  if (!isNaN(v) && v >= 0) setHours(v)
+                }}
+                className="w-24 border rounded-md px-2 py-1 text-sm text-center focus:outline-none focus:ring-2 focus:ring-ring"
+              />
+              <span className="text-sm text-muted-foreground">時間</span>
+            </div>
           </div>
 
-          {/* 現在の状態 */}
+          {/* ── コメント ── */}
           <div className="space-y-2">
-            <Label>現在の状態</Label>
-            <RadioGroup
-              value={status}
-              onValueChange={(v) => setStatus(v as typeof status)}
-              className="flex gap-6"
-            >
-              <div className="flex items-center gap-2">
-                <RadioGroupItem value="勉強中" id="studying" />
-                <Label htmlFor="studying">勉強中</Label>
-              </div>
-              <div className="flex items-center gap-2">
-                <RadioGroupItem value="合格した" id="passed" />
-                <Label htmlFor="passed">合格した</Label>
-              </div>
-            </RadioGroup>
-          </div>
-
-          {/* コメント */}
-          <div className="space-y-2">
-            <Label htmlFor="comment">一言コメント（任意）</Label>
+            <Label className="text-base font-semibold">一言コメント（任意）</Label>
             <Textarea
               id="comment"
-              placeholder="学習の感想や進捗など..."
+              placeholder="勉強方法や感想など..."
               value={comment}
               onChange={(e) => setComment(e.target.value)}
               rows={3}

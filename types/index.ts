@@ -1,17 +1,25 @@
+export type Qualification = {
+  id: string
+  name: string
+  category: string
+  created_at: string
+}
+
 export type Material = {
   id: string
   title: string
   category: string
   amazon_url: string
+  qualification_id: string | null
   created_at: string
 }
 
 export type StudyLog = {
   id: string
-  material_id: string | null
+  qualification_id: string | null
   minutes: number
   comment: string | null
   status: string
   created_at: string
-  materials?: Pick<Material, 'title' | 'amazon_url'> | null
+  qualifications?: Pick<Qualification, 'name' | 'category'> | null
 }

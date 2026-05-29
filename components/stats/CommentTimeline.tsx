@@ -13,6 +13,11 @@ function relativeTime(dateStr: string): string {
   return `${days}日前`
 }
 
+function formatHours(minutes: number): string {
+  const h = minutes / 60
+  return h % 1 === 0 ? `${h}時間` : `${h.toFixed(1)}時間`
+}
+
 export function CommentTimeline({ logs }: Props) {
   const withComment = logs.filter((l) => l.comment)
 
@@ -23,23 +28,14 @@ export function CommentTimeline({ logs }: Props) {
   return (
     <ul className="space-y-3">
       {withComment.map((log) => (
-        <li key={log.id} className="p-3 rounded-lg border bg-card space-y-1">
+        <li key={log.id} className="p-3 rounded-lg border bg-card space-y-1.5">
           <div className="flex items-center justify-between gap-2">
-            <span className="text-xs text-muted-foreground">
-              {log.materials?.title ?? '教材不明'} · {log.minutes}分
+            <span className="text-xs font-medium text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">
+              {formatHours(log.minutes)}で合格
             </span>
             <span className="text-xs text-muted-foreground">{relativeTime(log.created_at)}</span>
           </div>
           <p className="text-sm">{log.comment}</p>
-          <span
-            className={`inline-block text-xs px-2 py-0.5 rounded-full font-medium ${
-              log.status === '合格した'
-                ? 'bg-green-100 text-green-700'
-                : 'bg-blue-100 text-blue-700'
-            }`}
-          >
-            {log.status}
-          </span>
         </li>
       ))}
     </ul>

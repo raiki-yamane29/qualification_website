@@ -8,8 +8,6 @@ export function SummaryCards({ logs }: Props) {
   const totalMinutes = logs.reduce((sum, l) => sum + l.minutes, 0)
   const totalHours = Math.floor(totalMinutes / 60)
   const remainMinutes = totalMinutes % 60
-  const passedCount = logs.filter((l) => l.status === '合格した').length
-  const passRate = logs.length > 0 ? Math.round((passedCount / logs.length) * 100) : 0
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -29,22 +27,22 @@ export function SummaryCards({ logs }: Props) {
               </>
             )}
           </p>
-          <p className="text-muted-foreground text-sm mt-1">{logs.length} 件の記録</p>
+          <p className="text-muted-foreground text-sm mt-1">{logs.length} 件の合格記録</p>
         </CardContent>
       </Card>
 
       <Card>
         <CardHeader className="flex flex-row items-center gap-2 pb-2">
           <Trophy className="w-5 h-5 text-yellow-500" />
-          <CardTitle className="text-base">現在の合格率</CardTitle>
+          <CardTitle className="text-base">合格者数</CardTitle>
         </CardHeader>
         <CardContent>
           <p className="text-3xl font-bold">
-            {passRate}
-            <span className="text-lg font-normal ml-1">%</span>
+            {logs.length}
+            <span className="text-lg font-normal ml-1">人</span>
           </p>
           <p className="text-muted-foreground text-sm mt-1">
-            {passedCount} 人が合格
+            平均 {logs.length > 0 ? Math.round(totalMinutes / logs.length / 60) : 0} 時間で合格
           </p>
         </CardContent>
       </Card>
