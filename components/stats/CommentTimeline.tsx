@@ -18,6 +18,26 @@ function formatHours(minutes: number): string {
   return h % 1 === 0 ? `${h}時間` : `${h.toFixed(1)}時間`
 }
 
+function BackgroundTags({ log }: { log: StudyLog }) {
+  const tags = [
+    log.bg_job,
+    log.bg_job === 'ITエンジニア' && log.bg_it_years ? `IT歴${log.bg_it_years}` : null,
+    log.bg_education,
+  ].filter(Boolean) as string[]
+
+  if (tags.length === 0) return null
+
+  return (
+    <div className="flex flex-wrap gap-1">
+      {tags.map((tag) => (
+        <span key={tag} className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
+          {tag}
+        </span>
+      ))}
+    </div>
+  )
+}
+
 export function CommentTimeline({ logs }: Props) {
   const withComment = logs.filter((l) => l.comment)
 
@@ -35,6 +55,7 @@ export function CommentTimeline({ logs }: Props) {
             </span>
             <span className="text-xs text-muted-foreground">{relativeTime(log.created_at)}</span>
           </div>
+          <BackgroundTags log={log} />
           <p className="text-sm">{log.comment}</p>
         </li>
       ))}
