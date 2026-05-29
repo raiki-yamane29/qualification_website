@@ -9,7 +9,7 @@ const geistSans = Geist({
 })
 
 export const metadata: Metadata = {
-  title: '資格勉強ログ',
+  title: '資格合格ログ',
   description: '誰でも資格試験の学習記録を投稿・集計できるサイト',
 }
 
@@ -24,7 +24,7 @@ export default function RootLayout({
         <header className="border-b">
           <div className="max-w-3xl mx-auto px-4 h-14 flex items-center justify-between">
             <Link href="/" className="font-bold text-lg">
-              資格勉強ログ
+              資格合格ログ
             </Link>
             <nav className="flex gap-4 text-sm">
               <Link href="/" className="hover:underline">
