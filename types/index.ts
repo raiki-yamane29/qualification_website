@@ -20,6 +20,9 @@ export type StudyLog = {
   minutes: number
   comment: string | null
   status: string
+  bg_job: string | null
+  bg_it_years: string | null
+  bg_education: string | null
   created_at: string
   qualifications?: Pick<Qualification, 'name' | 'category'> | null
 }

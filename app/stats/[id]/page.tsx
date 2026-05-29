@@ -1,21 +1,27 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
+import { Suspense } from 'react'
 import { supabase } from '@/lib/supabase'
 import { StudyLog, Material } from '@/types'
 import { SummaryCards } from '@/components/stats/SummaryCards'
 import { StudyTimeBarChart } from '@/components/stats/StudyTimeBarChart'
 import { MaterialRanking } from '@/components/stats/MaterialRanking'
 import { CommentTimeline } from '@/components/stats/CommentTimeline'
+import { BackgroundFilter } from '@/components/stats/BackgroundFilter'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { ArrowLeft } from 'lucide-react'
 
 export const dynamic = 'force-dynamic'
 
-type Props = { params: Promise<{ id: string }> }
+type Props = {
+  params: Promise<{ id: string }>
+  searchParams: Promise<{ job?: string; it_years?: string; education?: string }>
+}
 
-export default async function QualificationStatsPage({ params }: Props) {
+export default async function QualificationStatsPage({ params, searchParams }: Props) {
   const { id } = await params
+  const { job, it_years, education } = await searchParams
 
   const [{ data: qualification }, { data: logsRaw }, { data: materialsRaw }] = await Promise.all([
     supabase.from('qualifications').select('*').eq('id', id).single(),
@@ -30,9 +36,18 @@ export default async function QualificationStatsPage({ params }: Props) {
 
   if (!qualification) notFound()
 
-  const logs = (logsRaw ?? []) as StudyLog[]
+  const allLogs = (logsRaw ?? []) as StudyLog[]
   const materials = (materialsRaw ?? []) as Material[]
-  const timelineLogs = logs.slice(0, 20)
+
+  const filteredLogs = allLogs.filter((l) => {
+    if (job && l.bg_job !== job) return false
+    if (it_years && l.bg_it_years !== it_years) return false
+    if (education && l.bg_education !== education) return false
+    return true
+  })
+
+  const displayLogs = filteredLogs
+  const timelineLogs = filteredLogs.slice(0, 20)
 
   return (
     <main className="min-h-screen py-10 px-4">
@@ -53,8 +68,23 @@ export default async function QualificationStatsPage({ params }: Props) {
           </div>
         </div>
 
+        {/* 背景フィルター */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">背景で絞り込む</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Suspense>
+              <BackgroundFilter
+                totalCount={allLogs.length}
+                filteredCount={filteredLogs.length}
+              />
+            </Suspense>
+          </CardContent>
+        </Card>
+
         {/* サマリーカード */}
-        <SummaryCards logs={logs} />
+        <SummaryCards logs={displayLogs} />
 
         {/* 合格者の学習時間分布 */}
         <Card>
@@ -62,7 +92,7 @@ export default async function QualificationStatsPage({ params }: Props) {
             <CardTitle className="text-base">合格者の学習時間分布</CardTitle>
           </CardHeader>
           <CardContent>
-            <StudyTimeBarChart logs={logs} />
+            <StudyTimeBarChart logs={displayLogs} />
           </CardContent>
         </Card>
 

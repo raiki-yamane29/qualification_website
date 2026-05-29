@@ -12,6 +12,44 @@ import { Textarea } from '@/components/ui/textarea'
 const SLIDER_MIN = 0
 const SLIDER_MAX = 500
 
+const BG_JOB_OPTIONS = ['学生', 'ITエンジニア', '非IT職', 'その他']
+const BG_IT_YEARS_OPTIONS = ['未経験', '〜1年', '1〜3年', '3〜5年', '5年以上']
+const BG_EDUCATION_OPTIONS = ['高専・専門卒', '大卒（文系）', '大卒（理系）', '大学院卒', 'その他']
+
+function ChipGroup({
+  label,
+  options,
+  value,
+  onChange,
+}: {
+  label: string
+  options: string[]
+  value: string
+  onChange: (v: string) => void
+}) {
+  return (
+    <div>
+      <p className="text-xs text-muted-foreground mb-1.5">{label}</p>
+      <div className="flex flex-wrap gap-1.5">
+        {options.map((opt) => (
+          <button
+            key={opt}
+            type="button"
+            onClick={() => onChange(value === opt ? '' : opt)}
+            className={`text-xs px-2.5 py-1 rounded-full border transition-colors ${
+              value === opt
+                ? 'bg-zinc-800 text-white border-zinc-800'
+                : 'bg-muted text-muted-foreground border-transparent hover:border-zinc-300'
+            }`}
+          >
+            {opt}
+          </button>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 export function StudyLogForm() {
   const router = useRouter()
   const [qualifications, setQualifications] = useState<Qualification[]>([])
@@ -20,6 +58,9 @@ export function StudyLogForm() {
   const [qualificationName, setQualificationName] = useState<string>('')
   const [hours, setHours] = useState<number>(0)
   const [comment, setComment] = useState('')
+  const [bgJob, setBgJob] = useState('')
+  const [bgItYears, setBgItYears] = useState('')
+  const [bgEducation, setBgEducation] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
 
@@ -65,6 +106,9 @@ export function StudyLogForm() {
       minutes: Math.round(hours * 60),
       comment: comment.trim() || null,
       status: '合格した',
+      bg_job: bgJob || null,
+      bg_it_years: bgItYears || null,
+      bg_education: bgEducation || null,
     })
 
     if (insertError) {
@@ -92,7 +136,6 @@ export function StudyLogForm() {
           <div className="space-y-3">
             <Label className="text-base font-semibold">受験した資格</Label>
 
-            {/* カテゴリタグ（小さいチップ） */}
             <div>
               <p className="text-xs text-muted-foreground mb-1.5">カテゴリ</p>
               <div className="flex flex-wrap gap-1.5">
@@ -117,7 +160,6 @@ export function StudyLogForm() {
               </div>
             </div>
 
-            {/* 資格ボタン（大きめカード風） */}
             {selectedCategory && (
               <div>
                 <p className="text-xs text-muted-foreground mb-1.5">資格を選択</p>
@@ -164,7 +206,6 @@ export function StudyLogForm() {
               <span>300時間</span>
               <span>{SLIDER_MAX}時間</span>
             </div>
-            {/* 直接入力 */}
             <div className="flex items-center gap-2">
               <span className="text-xs text-muted-foreground shrink-0">直接入力:</span>
               <input
@@ -181,6 +222,32 @@ export function StudyLogForm() {
               />
               <span className="text-sm text-muted-foreground">時間</span>
             </div>
+          </div>
+
+          {/* ── 背景情報（任意） ── */}
+          <div className="space-y-3">
+            <div>
+              <Label className="text-base font-semibold">あなたの背景</Label>
+              <span className="text-xs text-muted-foreground ml-2">任意</span>
+            </div>
+            <p className="text-xs text-muted-foreground -mt-1">
+              入力すると、同じ背景を持つ人が参考にしやすくなります
+            </p>
+            <ChipGroup label="職種" options={BG_JOB_OPTIONS} value={bgJob} onChange={setBgJob} />
+            {bgJob === 'ITエンジニア' && (
+              <ChipGroup
+                label="ITエンジニア歴"
+                options={BG_IT_YEARS_OPTIONS}
+                value={bgItYears}
+                onChange={setBgItYears}
+              />
+            )}
+            <ChipGroup
+              label="学歴"
+              options={BG_EDUCATION_OPTIONS}
+              value={bgEducation}
+              onChange={setBgEducation}
+            />
           </div>
 
           {/* ── コメント ── */}
