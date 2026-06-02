@@ -63,7 +63,7 @@ export function QualificationList({ qualifications, logs }: Props) {
       {/* 資格カード一覧 */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         {filtered.map((q) => (
-          <Link key={q.id} href={`/stats/${q.id}`}>
+          <Link key={q.id} href={`/stats/${q.id}`} prefetch={false}>
             <Card className="hover:shadow-md transition-shadow cursor-pointer h-full">
               <CardContent className="p-4 space-y-3">
                 <div className="flex items-start justify-between gap-2">
