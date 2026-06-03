@@ -13,12 +13,18 @@ function relativeTime(dateStr: string): string {
   return `${days}日前`
 }
 
+function formatExamDate(dateStr: string): string {
+  const d = new Date(dateStr)
+  return `${d.getFullYear()}年${d.getMonth() + 1}月合格`
+}
+
 function formatHours(hours: number): string {
   return hours % 1 === 0 ? `${hours}時間` : `${hours.toFixed(1)}時間`
 }
 
 function BackgroundTags({ log }: { log: StudyLog }) {
   const tags = [
+    log.study_method,
     log.bg_job,
     log.bg_job === 'ITエンジニア' && log.bg_it_years ? `IT歴${log.bg_it_years}` : null,
     log.bg_education,
@@ -28,11 +34,18 @@ function BackgroundTags({ log }: { log: StudyLog }) {
 
   return (
     <div className="flex flex-wrap gap-1">
-      {tags.map((tag) => (
-        <span key={tag} className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
-          {tag}
+      {log.study_method && (
+        <span className="text-xs text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">
+          {log.study_method}
         </span>
-      ))}
+      )}
+      {[log.bg_job, log.bg_job === 'ITエンジニア' && log.bg_it_years ? `IT歴${log.bg_it_years}` : null, log.bg_education]
+        .filter(Boolean)
+        .map((tag) => (
+          <span key={tag as string} className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
+            {tag}
+          </span>
+        ))}
     </div>
   )
 }
@@ -49,10 +62,17 @@ export function CommentTimeline({ logs }: Props) {
       {withComment.map((log) => (
         <li key={log.id} className="p-3 rounded-lg border bg-card space-y-1.5">
           <div className="flex items-center justify-between gap-2">
-            <span className="text-xs font-medium text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">
-              {formatHours(log.hours)}で合格
-            </span>
-            <span className="text-xs text-muted-foreground">{relativeTime(log.created_at)}</span>
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <span className="text-xs font-medium text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">
+                {formatHours(log.hours)}で合格
+              </span>
+              {log.exam_date && (
+                <span className="text-xs text-muted-foreground">
+                  {formatExamDate(log.exam_date)}
+                </span>
+              )}
+            </div>
+            <span className="text-xs text-muted-foreground shrink-0">{relativeTime(log.created_at)}</span>
           </div>
           <BackgroundTags log={log} />
           <p className="text-sm">{log.comment}</p>

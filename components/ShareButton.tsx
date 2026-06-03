@@ -11,7 +11,7 @@ type Props = {
 
 export function ShareButton({ qualificationName, hours, siteUrl = '' }: Props) {
   function handleShare() {
-    const text = `「${qualificationName}」を${hours}時間の勉強で合格しました！ #資格合格 #勉強垢`
+    const text = `「${qualificationName}」に合格しました！ 勉強時間は${hours}時間でした #${qualificationName}`
     const url = new URL('https://twitter.com/intent/tweet')
     url.searchParams.set('text', text)
     if (siteUrl) url.searchParams.set('url', siteUrl)

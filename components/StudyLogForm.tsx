@@ -12,6 +12,11 @@ import { Textarea } from '@/components/ui/textarea'
 const SLIDER_MIN = 0
 const SLIDER_MAX = 500
 
+const CURRENT_YEAR = new Date().getFullYear()
+const YEARS = Array.from({ length: 10 }, (_, i) => CURRENT_YEAR - i)
+const MONTHS = Array.from({ length: 12 }, (_, i) => i + 1)
+
+const STUDY_METHOD_OPTIONS = ['独学（書籍・Web）', 'オンライン講座', '会社研修', 'スクール・予備校', 'その他']
 const BG_JOB_OPTIONS = ['学生', 'ITエンジニア', '非IT職', 'その他']
 const BG_IT_YEARS_OPTIONS = ['未経験', '〜1年', '1〜3年', '3〜5年', '5年以上']
 const BG_EDUCATION_OPTIONS = ['高専・専門卒', '大卒（文系）', '大卒（理系）', '大学院卒', 'その他']
@@ -60,6 +65,9 @@ export function StudyLogForm() {
   const [qualificationName, setQualificationName] = useState<string>('')
   const [hours, setHours] = useState<number>(0)
   const [comment, setComment] = useState('')
+  const [examYear, setExamYear] = useState<string>('')
+  const [examMonth, setExamMonth] = useState<string>('')
+  const [studyMethod, setStudyMethod] = useState('')
   const [bgJob, setBgJob] = useState('')
   const [bgItYears, setBgItYears] = useState('')
   const [bgEducation, setBgEducation] = useState('')
@@ -115,6 +123,8 @@ export function StudyLogForm() {
       hours: hours,
       comment: comment.trim() || null,
       status: '合格した',
+      study_method: studyMethod || null,
+      exam_date: examYear && examMonth ? `${examYear}-${examMonth.padStart(2, '0')}-01` : null,
       bg_job: bgJob || null,
       bg_it_years: bgItYears || null,
       bg_education: bgEducation || null,
@@ -231,6 +241,45 @@ export function StudyLogForm() {
               />
               <span className="text-sm text-muted-foreground">時間</span>
             </div>
+          </div>
+
+          {/* ── 合格年月（任意） ── */}
+          <div className="space-y-2">
+            <div>
+              <Label className="text-base font-semibold">合格した年月</Label>
+              <span className="text-xs text-muted-foreground ml-2">任意</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <select
+                value={examYear}
+                onChange={(e) => setExamYear(e.target.value)}
+                className="border rounded-md px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring bg-background"
+              >
+                <option value="">年</option>
+                {YEARS.map((y) => (
+                  <option key={y} value={y}>{y}年</option>
+                ))}
+              </select>
+              <select
+                value={examMonth}
+                onChange={(e) => setExamMonth(e.target.value)}
+                className="border rounded-md px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring bg-background"
+              >
+                <option value="">月</option>
+                {MONTHS.map((m) => (
+                  <option key={m} value={m}>{m}月</option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          {/* ── 勉強方法（任意） ── */}
+          <div className="space-y-2">
+            <div>
+              <Label className="text-base font-semibold">主な勉強方法</Label>
+              <span className="text-xs text-muted-foreground ml-2">任意</span>
+            </div>
+            <ChipGroup label="" options={STUDY_METHOD_OPTIONS} value={studyMethod} onChange={setStudyMethod} />
           </div>
 
           {/* ── 背景情報（任意） ── */}
