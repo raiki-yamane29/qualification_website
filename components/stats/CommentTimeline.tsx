@@ -19,6 +19,7 @@ function formatHours(hours: number): string {
 
 function BackgroundTags({ log }: { log: StudyLog }) {
   const tags = [
+    log.study_method,
     log.bg_job,
     log.bg_job === 'ITエンジニア' && log.bg_it_years ? `IT歴${log.bg_it_years}` : null,
     log.bg_education,
@@ -28,11 +29,18 @@ function BackgroundTags({ log }: { log: StudyLog }) {
 
   return (
     <div className="flex flex-wrap gap-1">
-      {tags.map((tag) => (
-        <span key={tag} className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
-          {tag}
+      {log.study_method && (
+        <span className="text-xs text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">
+          {log.study_method}
         </span>
-      ))}
+      )}
+      {[log.bg_job, log.bg_job === 'ITエンジニア' && log.bg_it_years ? `IT歴${log.bg_it_years}` : null, log.bg_education]
+        .filter(Boolean)
+        .map((tag) => (
+          <span key={tag as string} className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
+            {tag}
+          </span>
+        ))}
     </div>
   )
 }

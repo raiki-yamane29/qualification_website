@@ -12,6 +12,7 @@ import { Textarea } from '@/components/ui/textarea'
 const SLIDER_MIN = 0
 const SLIDER_MAX = 500
 
+const STUDY_METHOD_OPTIONS = ['独学（書籍・Web）', 'オンライン講座', '会社研修', 'スクール・予備校', 'その他']
 const BG_JOB_OPTIONS = ['学生', 'ITエンジニア', '非IT職', 'その他']
 const BG_IT_YEARS_OPTIONS = ['未経験', '〜1年', '1〜3年', '3〜5年', '5年以上']
 const BG_EDUCATION_OPTIONS = ['高専・専門卒', '大卒（文系）', '大卒（理系）', '大学院卒', 'その他']
@@ -60,6 +61,7 @@ export function StudyLogForm() {
   const [qualificationName, setQualificationName] = useState<string>('')
   const [hours, setHours] = useState<number>(0)
   const [comment, setComment] = useState('')
+  const [studyMethod, setStudyMethod] = useState('')
   const [bgJob, setBgJob] = useState('')
   const [bgItYears, setBgItYears] = useState('')
   const [bgEducation, setBgEducation] = useState('')
@@ -115,6 +117,7 @@ export function StudyLogForm() {
       hours: hours,
       comment: comment.trim() || null,
       status: '合格した',
+      study_method: studyMethod || null,
       bg_job: bgJob || null,
       bg_it_years: bgItYears || null,
       bg_education: bgEducation || null,
@@ -231,6 +234,15 @@ export function StudyLogForm() {
               />
               <span className="text-sm text-muted-foreground">時間</span>
             </div>
+          </div>
+
+          {/* ── 勉強方法（任意） ── */}
+          <div className="space-y-2">
+            <div>
+              <Label className="text-base font-semibold">主な勉強方法</Label>
+              <span className="text-xs text-muted-foreground ml-2">任意</span>
+            </div>
+            <ChipGroup label="" options={STUDY_METHOD_OPTIONS} value={studyMethod} onChange={setStudyMethod} />
           </div>
 
           {/* ── 背景情報（任意） ── */}
