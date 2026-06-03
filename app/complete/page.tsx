@@ -46,7 +46,15 @@ export default function CompletePage() {
           </div>
           <div className="flex flex-col gap-3 items-center">
             {qualificationName && hours > 0 && (
-              <ShareButton qualificationName={qualificationName} hours={hours} />
+              <ShareButton
+                qualificationName={qualificationName}
+                hours={hours}
+                siteUrl={
+                  qualificationId
+                    ? `https://qualification-website.vercel.app/stats/${qualificationId}`
+                    : 'https://qualification-website.vercel.app'
+                }
+              />
             )}
             <Button variant="outline" onClick={handlePostAgain}>
               もう一度投稿する

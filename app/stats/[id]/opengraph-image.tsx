@@ -35,9 +35,10 @@ export default async function Image({ params }: { params: Promise<{ id: string }
         }}
       >
         {/* サイト名 */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '40px' }}>
+        <div style={{ display: 'flex', marginBottom: '32px' }}>
           <div
             style={{
+              display: 'flex',
               background: '#18181b',
               color: '#fff',
               fontSize: '22px',
@@ -51,24 +52,26 @@ export default async function Image({ params }: { params: Promise<{ id: string }
         </div>
 
         {/* カテゴリ */}
-        <div
-          style={{
-            fontSize: '24px',
-            color: '#64748b',
-            background: '#f1f5f9',
-            border: '1px solid #e2e8f0',
-            padding: '4px 14px',
-            borderRadius: '100px',
-            width: 'fit-content',
-            marginBottom: '20px',
-          }}
-        >
-          {category}
+        <div style={{ display: 'flex', marginBottom: '16px' }}>
+          <div
+            style={{
+              display: 'flex',
+              fontSize: '24px',
+              color: '#64748b',
+              background: '#f1f5f9',
+              border: '1px solid #e2e8f0',
+              padding: '4px 14px',
+              borderRadius: '100px',
+            }}
+          >
+            {category}
+          </div>
         </div>
 
         {/* 資格名 */}
         <div
           style={{
+            display: 'flex',
             fontSize: name.length > 20 ? '52px' : '64px',
             fontWeight: 800,
             color: '#0f172a',
@@ -80,38 +83,40 @@ export default async function Image({ params }: { params: Promise<{ id: string }
         </div>
 
         {/* 統計 */}
-        <div style={{ display: 'flex', gap: '40px', marginTop: '40px' }}>
+        <div style={{ display: 'flex', gap: '40px' }}>
           <div
             style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
               background: '#fff',
               border: '1px solid #e2e8f0',
               borderRadius: '16px',
               padding: '24px 36px',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
               gap: '6px',
             }}
           >
-            <div style={{ fontSize: '48px', fontWeight: 800, color: '#10b981' }}>
+            <div style={{ display: 'flex', fontSize: '48px', fontWeight: 800, color: '#10b981' }}>
               {avgHours !== null ? `${avgHours}h` : '-'}
             </div>
-            <div style={{ fontSize: '20px', color: '#64748b' }}>平均学習時間</div>
+            <div style={{ display: 'flex', fontSize: '20px', color: '#64748b' }}>平均学習時間</div>
           </div>
           <div
             style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
               background: '#fff',
               border: '1px solid #e2e8f0',
               borderRadius: '16px',
               padding: '24px 36px',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
               gap: '6px',
             }}
           >
-            <div style={{ fontSize: '48px', fontWeight: 800, color: '#3b82f6' }}>{count}人</div>
-            <div style={{ fontSize: '20px', color: '#64748b' }}>合格者の記録</div>
+            <div style={{ display: 'flex', fontSize: '48px', fontWeight: 800, color: '#3b82f6' }}>
+              {count}人
+            </div>
+            <div style={{ display: 'flex', fontSize: '20px', color: '#64748b' }}>合格者の記録</div>
           </div>
         </div>
       </div>
