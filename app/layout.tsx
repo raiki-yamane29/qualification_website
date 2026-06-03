@@ -13,6 +13,9 @@ const geistSans = Geist({
 export const metadata: Metadata = {
   title: '資格合格ログ',
   description: '誰でも資格試験の学習記録を投稿・集計できるサイト',
+  verification: {
+    google: '8JVi8Y9TdV-gM0-910YMbtuf7cDp9Le2TDzuKhiodik',
+  },
 }
 
 export default function RootLayout({
